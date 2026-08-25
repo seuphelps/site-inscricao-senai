@@ -21,6 +21,17 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 // 1. Inscrição
 app.post('/api/inscrever', async (req, res) => {
     const { nome, cpf, whatsapp } = req.body;
+    const LIMITE_VAGAS = 200; // Altere este número para a lotação do auditório
+
+    // 1. O servidor conta quantos inscritos já existem
+    const { count, error: erroCount } = await supabase
+        .from('inscritos')
+        .select('*', { count: 'exact', head: true });
+
+    // 2. Se bateu o limite, ele barra a inscrição na hora!
+    if (count >= LIMITE_VAGAS) {
+        return res.status(403).json({ erro: 'Inscrições esgotadas! O auditório atingiu a lotação máxima.' });
+    }
     if (!nome || !cpf || !whatsapp) return res.status(400).json({ erro: 'Preencha todos os campos!' });
 
     const cpfLimpo = cpf.replace(/\D/g, '');
@@ -88,7 +99,8 @@ app.delete('/api/admin/deletar/:id', async (req, res) => {
 app.get('/api/sorteio/participantes', async (req, res) => {
     const { data, error } = await supabase
         .from('inscritos')
-        .select('id, nome');
+        .select('id, nome')
+        .eq('presente', true);
 
     if (error) return res.status(500).json({ erro: 'Erro ao buscar participantes.' });
     if (data.length === 0) return res.status(404).json({ erro: 'Nenhum inscrito.' });

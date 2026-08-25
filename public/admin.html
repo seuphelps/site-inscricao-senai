@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+    <script>
+    // Trava de segurança simples
+    const senha = prompt("🔒 Acesso Restrito. Digite a senha do Administrador:");
+    
+    if (senha !== "admin2026") { // Você pode mudar a senha aqui
+        alert("Senha incorreta!");
+        window.location.href = "/"; // Expulsa a pessoa de volta para a página inicial
+    }
+</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Dia do Administrador</title>
