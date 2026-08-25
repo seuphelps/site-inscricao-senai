@@ -3,14 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sorteio - Admin 4.0</title>
+    <title>Roleta de Prêmios - Admin 4.0</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --fundo-escuro: #0a0a0a;
+            --fundo-card: #141414;
             --azul-senai: #005baa;
             --texto-claro: #f0f4f8;
             --borda: #2a2a2a;
+            --destaque-verde: #22c55e;
         }
 
         body {
@@ -26,123 +28,174 @@
             text-align: center;
         }
 
-        .sorteio-container {
-            background: #141414;
+        .container {
+            background-color: var(--fundo-card);
             border: 1px solid var(--borda);
             border-radius: 16px;
-            padding: 40px;
+            padding: 50px;
             width: 100%;
-            max-width: 500px;
-            box-shadow: 0 10px 30px rgba(0, 91, 170, 0.2);
+            max-width: 600px;
+            box-shadow: 0 10px 40px rgba(0, 91, 170, 0.15);
         }
 
-        .brinde-img {
-            width: 150px;
-            height: 150px;
-            background-color: #1a1a1a;
-            border: 2px dashed var(--borda);
+        .titulo {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #888;
+        }
+
+        /* Displays da Roleta */
+        .display-box {
+            background-color: #0a0a0a;
+            border: 2px solid var(--borda);
             border-radius: 12px;
-            margin: 0 auto 20px auto;
+            padding: 20px;
+            margin-bottom: 20px;
+            height: 60px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #888;
-            font-size: 14px;
+            overflow: hidden;
+            position: relative;
         }
 
-        .nome-roleta {
-            font-size: 32px;
-            font-weight: 800;
-            height: 50px;
-            margin: 20px 0;
-            color: var(--azul-senai);
-        }
+        .display-brinde { color: var(--destaque-verde); font-size: 28px; font-weight: 800; }
+        .display-nome { color: var(--azul-senai); font-size: 32px; font-weight: 800; }
+        .ticket { color: #666; font-size: 14px; margin-top: -10px; margin-bottom: 20px; height: 20px; }
 
-        .ticket-ganhador {
-            font-size: 18px;
-            color: #888;
-            margin-bottom: 30px;
-            height: 25px;
-        }
-
-        button {
+        .btn-sortear {
             background-color: var(--azul-senai);
             color: white;
             border: none;
-            padding: 15px 30px;
+            padding: 18px 40px;
             font-size: 18px;
-            font-weight: bold;
+            font-weight: 800;
             border-radius: 8px;
             cursor: pointer;
-            transition: 0.3s;
+            transition: all 0.3s;
             width: 100%;
+            text-transform: uppercase;
         }
 
-        button:hover { background-color: #004280; }
-        button:disabled { background-color: #333; cursor: not-allowed; }
+        .btn-sortear:hover { background-color: #004280; transform: translateY(-2px); }
+        .btn-sortear:disabled { background-color: #333; color: #666; cursor: not-allowed; transform: none; }
+
+        .restantes { margin-top: 20px; font-size: 14px; color: #888; }
     </style>
 </head>
 <body>
 
-    <div class="sorteio-container">
-        <h2>Hora do Sorteio!</h2>
-        <p style="color: #888;">Brinde: Kit Exclusivo SENAI</p>
+    <div class="container">
+        <div class="titulo">Sorteio Oficial</div>
         
-        <div class="brinde-img">
-            [ Imagem do Brinde ]
+        <!-- Roleta do Brinde -->
+        <div class="display-box">
+            <div class="display-brinde" id="brinde-txt">🎁 Aguardando...</div>
         </div>
 
-        <div class="nome-roleta" id="nome-display">Preparado?</div>
-        <div class="ticket-ganhador" id="ticket-display"></div>
+        <!-- Roleta do Ganhador -->
+        <div class="display-box" style="height: 80px;">
+            <div class="display-nome" id="nome-txt">? ? ?</div>
+        </div>
+        <div class="ticket" id="ticket-txt"></div>
 
-        <button id="btn-sortear" onclick="iniciarSorteio()">Sortear Ganhador</button>
+        <button class="btn-sortear" id="btn-iniciar" onclick="iniciarRoleta()">Rodar Roleta</button>
+        <div class="restantes" id="status-brindes">Prêmios disponíveis: Carregando...</div>
     </div>
 
     <script>
+        // Lista de Brindes (Você pode alterar os nomes aqui)
+        let listaBrindes = [
+            "Kit Exclusivo SENAI",
+            "Garrafa Térmica",
+            "Mochila Executiva",
+            "Powerbank 10.000mAh",
+            "Caderno Inteligente"
+        ];
+        
         let participantes = [];
+        
+        const brindeTxt = document.getElementById('brinde-txt');
+        const nomeTxt = document.getElementById('nome-txt');
+        const ticketTxt = document.getElementById('ticket-txt');
+        const btn = document.getElementById('btn-iniciar');
+        const statusBrindes = document.getElementById('status-brindes');
 
-        // Carrega os participantes ao abrir a página
-        async function carregarParticipantes() {
+        async function carregarDados() {
             try {
                 const res = await fetch('/api/sorteio/participantes');
                 if (res.ok) participantes = await res.json();
+                atualizarStatus();
             } catch (err) {
-                console.error("Erro ao carregar");
+                alert("Erro ao carregar participantes.");
             }
         }
 
-        async function iniciarSorteio() {
-            if (participantes.length === 0) return alert("Nenhum participante encontrado!");
-
-            const btn = document.getElementById('btn-sortear');
-            const displayNome = document.getElementById('nome-display');
-            const displayTicket = document.getElementById('ticket-display');
-            
-            btn.disabled = true;
-            btn.textContent = "Sorteando...";
-            displayTicket.textContent = "";
-
-            let contador = 0;
-            // Efeito de "roleta" rodando os nomes
-            const intervalo = setInterval(() => {
-                const random = participantes[Math.floor(Math.random() * participantes.length)];
-                displayNome.textContent = random.nome;
-                contador++;
-
-                // Para a roleta após 30 giros (aprox 3 segundos)
-                if (contador > 30) {
-                    clearInterval(intervalo);
-                    const ganhador = participantes[Math.floor(Math.random() * participantes.length)];
-                    displayNome.textContent = ganhador.nome;
-                    displayTicket.textContent = `Ticket: #${String(ganhador.id).padStart(3, '0')}`;
-                    displayNome.style.color = "#22c55e"; // Fica verde
-                    btn.textContent = "Sortear Novamente";
-                    btn.disabled = false;
-                }
-            }, 100); // Velocidade da troca de nomes
+        function atualizarStatus() {
+            statusBrindes.textContent = `Prêmios disponíveis: ${listaBrindes.length} | Participantes: ${participantes.length}`;
+            if (listaBrindes.length === 0) {
+                btn.disabled = true;
+                btn.textContent = "Sorteio Encerrado";
+                brindeTxt.textContent = "Todos os prêmios sorteados!";
+            }
         }
 
-        carregarParticipantes();
+        function animarRoleta(elemento, arrayOpcoes, duracao, callback) {
+            let contador = 0;
+            let velocidade = 50; // milissegundos
+            const totalGiros = duracao / velocidade;
+
+            const intervalo = setInterval(() => {
+                const itemAleatorio = arrayOpcoes[Math.floor(Math.random() * arrayOpcoes.length)];
+                
+                // Se for objeto (participante), pega o nome. Se for string (brinde), pega direto.
+                elemento.textContent = itemAleatorio.nome || itemAleatorio;
+                contador++;
+
+                if (contador >= totalGiros) {
+                    clearInterval(intervalo);
+                    const itemVencedor = arrayOpcoes[Math.floor(Math.random() * arrayOpcoes.length)];
+                    callback(itemVencedor);
+                }
+            }, velocidade);
+        }
+
+        function iniciarRoleta() {
+            if (participantes.length === 0) return alert("Nenhum inscrito para sortear!");
+            if (listaBrindes.length === 0) return;
+
+            btn.disabled = true;
+            btn.textContent = "Sorteando Prêmio...";
+            nomeTxt.textContent = "----------";
+            ticketTxt.textContent = "";
+
+            // ETAPA 1: Roda o Brinde (2 segundos)
+            animarRoleta(brindeTxt, listaBrindes, 2000, (brindeSorteado) => {
+                brindeTxt.textContent = `🎁 ${brindeSorteado}`;
+                
+                // Remove o brinde sorteado da lista
+                listaBrindes = listaBrindes.filter(b => b !== brindeSorteado);
+                atualizarStatus();
+
+                // ETAPA 2: Roda o Participante (2.5 segundos)
+                btn.textContent = "Sorteando Ganhador...";
+                
+                setTimeout(() => {
+                    animarRoleta(nomeTxt, participantes, 2500, (ganhador) => {
+                        nomeTxt.textContent = ganhador.nome;
+                        ticketTxt.textContent = `Ticket: #${String(ganhador.id).padStart(3, '0')}`;
+                        
+                        btn.textContent = "Rodar Novamente";
+                        btn.disabled = false;
+                    });
+                }, 500); // Pausa dramática de meio segundo
+            });
+        }
+
+        carregarDados();
     </script>
 </body>
 </html>
