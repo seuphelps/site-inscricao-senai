@@ -8,24 +8,49 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --fundo-escuro: #0a0a0a;
-            --fundo-card: #141414;
-            --azul-senai: #005baa;
-            --vermelho-senai: #e3000f;
-            --texto-claro: #f0f4f8;
-            --texto-mutado: #888888;
-            --borda: #2a2a2a;
+            /* Paleta Dark Mode */
+            --fundo-site: #0a0a0c;
+            --fundo-card: rgba(20, 20, 25, 0.7);
+            --azul-senai: #0077ff; /* Azul mais brilhante para dar contraste */
+            --azul-hover: #005ce6;
+            --vermelho-senai: #ff4444;
+            --verde-sucesso: #22c55e;
+            
+            /* Textos */
+            --texto-principal: #ffffff;
+            --texto-mutado: #a0a0ab;
+            
+            /* Bordas e Efeitos */
+            --borda-card: rgba(0, 119, 255, 0.3);
+            --sombra-neon: 0 0 20px rgba(0, 119, 255, 0.15);
         }
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--fundo-escuro);
-            color: var(--texto-claro);
-            margin: 0;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
+            background-color: var(--fundo-site);
+            background-image: 
+                radial-gradient(circle at top right, rgba(0, 119, 255, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at bottom left, rgba(0, 119, 255, 0.05) 0%, transparent 40%);
+            color: var(--texto-principal);
+                display: flex;
             justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* O Efeito de Vidro Fosco (Glassmorphism) para os containers */
+        .container {
+            background: var(--fundo-card);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--borda-card);
+            border-radius: 16px;
+            box-shadow: var(--sombra-neon);
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
         }
 
         /* --- LAYOUT SPLIT SCREEN --- */
