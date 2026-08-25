@@ -225,10 +225,24 @@
             }());
         }
 
+        // === CONFIGURAÇÕES DE ÁUDIO E TEMPO ===
+        const somSuspense = new Audio('./audios/suspense.mp3');
+        const somVitória = new Audio('./audios/vitoria.mp3');
+        somSuspense.loop = true;
+
+        // AJUSTE OS TEMPOS AQUI (1000 = 1 segundo)
+        const TEMPO_ROLANDO_BRINDE = 2000; // 2 segundos para o brinde
+        const TEMPO_PAUSA = 500;           // Meio segundo de suspense
+        const TEMPO_ROLANDO_NOME = 5000;   // 5 segundos rodando o nome (Ajuste para bater com seu áudio!)
+        
+        // ... (Mantenha as listas de brindes e outras funções iguais) ...
+
+        // Vá até a função iniciarRoleta e substitua por esta:
         function iniciarRoleta() {
             if (participantes.length === 0) return alert("Nenhum inscrito para sortear!");
             if (listaBrindes.length === 0) return;
 
+            // Inicia o áudio de suspense
             somSuspense.currentTime = 0;
             somSuspense.play();
 
@@ -238,30 +252,32 @@
             ticketTxt.textContent = "";
             nomeTxt.classList.remove('vencedor-destaque');
 
-            // Etapa 1: Brinde
-            animarRoleta(brindeTxt, listaBrindes, 2000, (brindeSorteado) => {
+            // Etapa 1: Brinde usa a variável TEMPO_ROLANDO_BRINDE
+            animarRoleta(brindeTxt, listaBrindes, TEMPO_ROLANDO_BRINDE, (brindeSorteado) => {
                 brindeTxt.textContent = `🎁 ${brindeSorteado}`;
                 listaBrindes = listaBrindes.filter(b => b !== brindeSorteado);
                 atualizarStatus();
 
-                // Etapa 2: Nome
+                // Etapa 2: Nome usa a variável TEMPO_ROLANDO_NOME
                 setTimeout(() => {
-                    animarRoleta(nomeTxt, participantes, 3500, (ganhador) => {
-                        somSuspense.pause();
-                        somVitoria.currentTime = 0;
-                        somVitoria.play();
+                    animarRoleta(nomeTxt, participantes, TEMPO_ROLANDO_NOME, (ganhador) => {
                         
-                        // Chama a explosão de confetes!
+                        // Exatamente aqui a animação acaba. 
+                        // Nós pausamos o suspense e soltamos o som de vitória curto!
+                        somSuspense.pause();
+                        somVitória.currentTime = 0;
+                        somVitória.play();
+
                         soltarConfetes();
 
                         nomeTxt.textContent = ganhador.nome;
-                        nomeTxt.classList.add('vencedor-destaque'); // Adiciona brilho verde pulsante
+                        nomeTxt.classList.add('vencedor-destaque'); 
                         ticketTxt.textContent = `TICKET: #${String(ganhador.id).padStart(3, '0')}`;
                         
                         btn.textContent = "Sortear Próximo";
                         btn.disabled = false;
                     });
-                }, 500); 
+                }, TEMPO_PAUSA); 
             });
         }
 
