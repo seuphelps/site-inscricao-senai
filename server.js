@@ -122,6 +122,28 @@ app.get('/api/admin/exportar', async (req, res) => {
     return res.send(csv);
 });
 
+// Rota de Check-in (Portaria)
+app.post('/api/checkin', async (req, res) => {
+    const { id } = req.body;
+
+    if (!id) return res.status(400).json({ erro: 'QR Code inválido.' });
+
+    // Atualiza o status do participante para presente = true
+    const { data, error } = await supabase
+        .from('inscritos')
+        .update({ presente: true })
+        .eq('id', id)
+        .select(); // Retorna os dados da pessoa para mostrarmos na tela
+
+    if (error || data.length === 0) {
+        return res.status(404).json({ erro: 'Ingresso não encontrado!' });
+    }
+
+    // Devolve o nome da pessoa para o celular da portaria ver quem é
+    res.json({ sucesso: true, nome: data[0].nome });
+});
+
+
 app.listen(PORT, () => {
     console.log(`🚀 Servidor Supabase rodando na porta ${PORT}`);
 });
