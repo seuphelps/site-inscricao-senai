@@ -84,6 +84,18 @@ app.delete('/api/admin/deletar/:id', async (req, res) => {
     res.json({ mensagem: 'Inscrição removida com sucesso!' });
 });
 
+// 5. Rota para Sorteio
+app.get('/api/sorteio/participantes', async (req, res) => {
+    const { data, error } = await supabase
+        .from('inscritos')
+        .select('id, nome');
+
+    if (error) return res.status(500).json({ erro: 'Erro ao buscar participantes.' });
+    if (data.length === 0) return res.status(404).json({ erro: 'Nenhum inscrito.' });
+
+    res.json(data);
+});
+
 app.listen(PORT, () => {
     console.log(`🚀 Servidor Supabase rodando na porta ${PORT}`);
 });
