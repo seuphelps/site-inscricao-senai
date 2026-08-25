@@ -6,25 +6,30 @@
     <title>Dia do Administrador - SENAI</title>
     <!-- Fontes: Inter (Principal) e Space Mono (Para o Ingresso) -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
     <style>
         :root {
             /* Paleta Dark Mode */
             --fundo-site: #0a0a0c;
             --fundo-card: rgba(20, 20, 25, 0.7);
-            --azul-senai: #0077ff; /* Azul mais brilhante para dar contraste */
+            --azul-senai: #0077ff;
             --azul-hover: #005ce6;
             --vermelho-senai: #ff4444;
             --verde-sucesso: #22c55e;
-            
+
             /* Textos */
             --texto-principal: #ffffff;
             --texto-mutado: #a0a0ab;
-            
+            --texto-claro: #ffffff;
+            --fundo-escuro: #000000;
+
             /* Bordas e Efeitos */
             --borda-card: rgba(0, 119, 255, 0.3);
             --sombra-neon: 0 0 20px rgba(0, 119, 255, 0.15);
+            --borda: rgba(255, 255, 255, 0.1);
         }
 
+        /* --- BASE --- */
         body {
             font-family: 'Inter', sans-serif;
             background-color: var(--fundo-site);
@@ -32,25 +37,12 @@
                 radial-gradient(circle at top right, rgba(0, 119, 255, 0.05) 0%, transparent 40%),
                 radial-gradient(circle at bottom left, rgba(0, 119, 255, 0.05) 0%, transparent 40%);
             color: var(--texto-principal);
-                display: flex;
+            display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             margin: 0;
             padding: 20px;
-        }
-
-        /* O Efeito de Vidro Fosco (Glassmorphism) para os containers */
-        .container {
-            background: var(--fundo-card);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid var(--borda-card);
-            border-radius: 16px;
-            box-shadow: var(--sombra-neon);
-            padding: 40px;
-            width: 100%;
-            max-width: 500px;
         }
 
         /* --- LAYOUT SPLIT SCREEN --- */
@@ -63,12 +55,14 @@
             border-radius: 20px;
             overflow: hidden;
             box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            border: 1px solid var(--borda);
+            border: 1px solid var(--borda-card);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
         }
 
         .lado-arte {
             flex: 1;
-            background: linear-gradient(135deg, rgba(0,91,170,0.8) 0%, rgba(227,0,15,0.2) 100%), url('https://www.transparenttextures.com/patterns/stardust.png');
+            background: linear-gradient(135deg, rgba(0,91,170,0.8) 0%, rgba(227,0,15,0.2) 100%);
             background-color: var(--fundo-escuro);
             display: flex;
             flex-direction: column;
@@ -76,7 +70,6 @@
             padding: 50px;
             position: relative;
         }
-
         .lado-arte h1 { font-size: 3rem; font-weight: 800; line-height: 1.1; margin-bottom: 10px; }
         .lado-arte p { font-size: 1.2rem; color: rgba(255,255,255,0.7); }
 
@@ -97,7 +90,6 @@
             border-bottom: 1px solid var(--borda);
             padding-bottom: 10px;
         }
-        
         .aba-btn {
             background: none;
             border: none;
@@ -108,7 +100,6 @@
             transition: 0.3s;
             padding: 0;
         }
-        
         .aba-btn:hover { color: var(--texto-claro); }
         .aba-btn.ativa { color: var(--azul-senai); }
 
@@ -125,7 +116,7 @@
             transition: all 0.3s ease;
         }
         input:focus { border-color: var(--azul-senai); outline: none; box-shadow: 0 0 15px rgba(0, 91, 170, 0.3); }
-
+        
         button.btn-acao {
             width: 100%; padding: 16px; background-color: var(--texto-claro); color: var(--fundo-escuro);
             border: none; border-radius: 8px; font-size: 16px; font-weight: 800; cursor: pointer; transition: 0.3s ease; margin-top: 10px;
@@ -133,46 +124,7 @@
         button.btn-acao:hover { background-color: var(--azul-senai); color: white; }
         .mensagem { margin-top: 15px; font-weight: bold; font-size: 14px; }
 
-        /* --- INGRESSO (BOARDING PASS) --- */
-        .ingresso-card {
-            background: linear-gradient(to bottom right, #0d1a26, #000000);
-            border: 1px solid var(--azul-senai);
-            border-radius: 16px;
-            padding: 30px;
-            position: relative;
-            margin-top: 20px;
-            box-shadow: 0 10px 30px rgba(0, 91, 170, 0.2);
-            font-family: 'Space Mono', monospace; /* Fonte tech/monoespaçada */
-        }
-
-        /* Efeito de recorte nas laterais do ingresso */
-        .ingresso-card::before, .ingresso-card::after {
-            content: ''; position: absolute; top: 60%; width: 30px; height: 30px;
-            background-color: var(--fundo-card); border-radius: 50%; transform: translateY(-50%);
-        }
-        .ingresso-card::before { left: -16px; border-right: 1px solid var(--azul-senai); }
-        .ingresso-card::after { right: -16px; border-left: 1px solid var(--azul-senai); }
-
-        .ingresso-topo { display: flex; justify-content: space-between; margin-bottom: 20px; align-items: flex-start; }
-        .ingresso-titulo { font-size: 28px; font-weight: 700; font-family: 'Inter', sans-serif; line-height: 1; margin: 0;}
-        .ingresso-sub { color: var(--azul-senai); font-size: 12px; letter-spacing: 2px; text-transform: uppercase; }
-        
-        .ingresso-dados { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .dado-bloco span { display: block; font-size: 10px; color: var(--texto-mutado); text-transform: uppercase; margin-bottom: 2px;}
-        .dado-bloco strong { font-size: 16px; color: white; }
-
-        .linha-tracejada { border-top: 2px dashed rgba(255,255,255,0.2); margin: 30px 0; }
-
-        .codigo-barras {
-            height: 50px; width: 100%; border-radius: 4px;
-            background: repeating-linear-gradient(to right, 
-                white 0, white 4px, transparent 4px, transparent 6px, 
-                white 6px, white 12px, transparent 12px, transparent 16px, 
-                white 16px, white 18px, transparent 18px, transparent 24px);
-            opacity: 0.8;
-        }
-
-        /* --- PROGRAMAÇÃO (POSTER STYLE) --- */
+        /* --- PROGRAMAÇÃO --- */
         .agenda-item {
             padding: 20px 0;
             border-bottom: 1px solid var(--borda);
@@ -182,37 +134,82 @@
             transition: 0.3s;
         }
         .agenda-item:hover { transform: translateX(10px); }
-        .agenda-hora { font-family: 'Space Mono', monospace; color: var(--azul-senai); font-weight: bold; font-size: 18px; min-width: 80px;}
+        .agenda-hora { font-family: 'Space Mono', monospace; color: var(--azul-senai); font-weight: bold; font-size: 18px; min-width: 60px; }
         .agenda-titulo { font-size: 22px; font-weight: 800; margin: 0 0 5px 0; color: white; }
-        .agenda-palestrante { color: var(--texto-mutado); font-size: 14px; margin: 0;}
+        .agenda-palestrante { color: var(--texto-mutado); font-size: 14px; margin: 0; }
 
-        #tela-buscar, #tela-info, #tela-ingresso { display: none; }
+        /* --- OCULTAR TELAS INATIVAS --- */
+        .tela-secao { display: none; }
+        #tela-form { display: block; }
 
+        /* --- ANIMAÇÃO E INGRESSO (BOARDING PASS) --- */
+        .impressora-wrapper { position: relative; margin: 20px auto; width: 100%; max-width: 400px; }
+        
+        .impressora-fenda {
+            height: 14px;
+            background: linear-gradient(180deg, #050505 0%, #1a1a24 100%);
+            border: 2px solid #2a2a2a;
+            border-radius: 8px;
+            box-shadow: inset 0 6px 10px rgba(0,0,0,0.9), 0 0 15px rgba(0, 119, 255, 0.4);
+            position: relative;
+            z-index: 10;
+            width: 106%;
+            left: -3%;
+            margin-bottom: -7px;
+        }
+        
+        .ticket-mask { overflow: hidden; padding-top: 10px; padding-bottom: 20px; }
+        
+        .ingresso-card {
+            background: linear-gradient(to bottom right, #0d1a26, #000000);
+            border: 1px solid var(--azul-senai);
+            border-radius: 16px;
+            padding: 30px;
+            position: relative;
+            margin-top: 20px;
+            box-shadow: 0 10px 30px rgba(0, 91, 170, 0.2);
+            font-family: 'Space Mono', monospace;
+        }
+
+        .ingresso-card::before, .ingresso-card::after {
+            content: ''; position: absolute; top: 60%; width: 30px; height: 30px;
+            background-color: var(--fundo-card); border-radius: 50%; transform: translateY(-50%);
+        }
+        .ingresso-card::before { left: -16px; border-right: 1px solid var(--azul-senai); }
+        .ingresso-card::after { right: -16px; border-left: 1px solid var(--azul-senai); }
+
+        .ingresso-topo { display: flex; justify-content: space-between; margin-bottom: 20px; align-items: flex-start; }
+        .ingresso-titulo { font-size: 28px; font-weight: 700; font-family: 'Inter', sans-serif; line-height: 1; margin: 0; }
+        .ingresso-sub { color: var(--azul-senai); font-size: 12px; letter-spacing: 2px; text-transform: uppercase; }
+
+        .ingresso-dados { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .dado-bloco span { display: block; font-size: 10px; color: var(--texto-mutado); text-transform: uppercase; margin-bottom: 2px; }
+        .dado-bloco strong { font-size: 16px; color: white; }
+
+        .linha-tracejada { border-top: 2px dashed rgba(255,255,255,0.2); margin: 30px 0; }
+
+        @keyframes impressao {
+            0% {
+                clip-path: inset(0 0 100% 0);
+                transform: translateY(-40px);
+                opacity: 0;
+            }
+            15% { opacity: 1; }
+            100% {
+                clip-path: inset(0 0 0 0);
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .animacao-impressao { animation: impressao 1.8s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+
+        /* --- RESPONSIVIDADE --- */
         @media (max-width: 900px) {
             .container-mestre { flex-direction: column; border-radius: 0; min-height: 100vh; }
             .lado-arte { padding: 30px; flex: none; text-align: center; }
             .lado-form { padding: 30px; }
         }
-        /* --- EFEITO DE IMPRESSORA TÉRMICA --- */
-@keyframes impressao {
-    0% {
-        clip-path: inset(0 0 100% 0); /* Esconde a parte de baixo do ticket */
-        transform: translateY(-40px); /* Puxa o ticket para cima */
-        opacity: 0;
-    }
-    15% {
-        opacity: 1; /* Aparece rapidamente */
-    }
-    100% {
-        clip-path: inset(0 0 0 0); /* Revela o ticket inteiro */
-        transform: translateY(0); /* Desliza para a posição original */
-        opacity: 1;
-    }
-}
-
-.animacao-impressao {
-    animation: impressao 1.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-}
     </style>
 </head>
 <body>
@@ -232,13 +229,13 @@
         <div class="lado-form">
             
             <div class="abas" id="menu-abas">
-                <button class="aba-btn ativa" onclick="alternarTela('form')">Inscrição</button>
-                <button class="aba-btn" onclick="alternarTela('buscar')">Meu Ingresso</button>
-                <button class="aba-btn" onclick="alternarTela('info')">Programação</button>
+                <button class="aba-btn ativa" data-target="form" onclick="alternarTela('form')">Inscrição</button>
+                <button class="aba-btn" data-target="buscar" onclick="alternarTela('buscar')">Meu Ingresso</button>
+                <button class="aba-btn" data-target="info" onclick="alternarTela('info')">Programação</button>
             </div>
 
             <!-- TELA 1: FORMULÁRIO -->
-            <div id="tela-form">
+            <div id="tela-form" class="tela-secao">
                 <h2>Garanta sua vaga</h2>
                 <p class="subtitulo">Preencha seus dados para o credenciamento.</p>
                 <form id="formInscricao">
@@ -260,7 +257,7 @@
             </div>
 
             <!-- TELA 2: BUSCAR INGRESSO -->
-            <div id="tela-buscar">
+            <div id="tela-buscar" class="tela-secao">
                 <h2>Localizar Ingresso</h2>
                 <p class="subtitulo">Digite seu CPF para acessar seu cartão de embarque.</p>
                 <div class="form-group">
@@ -271,43 +268,47 @@
                 <div id="msg-busca" class="mensagem"></div>
             </div>
 
-            <!-- TELA 3: INGRESSO RENDERIZADO (BOARDING PASS) -->
-            <div id="tela-ingresso">
+            <!-- TELA 3: INGRESSO RENDERIZADO -->
+            <div id="tela-ingresso" class="tela-secao">
                 <h2>Sua Credencial</h2>
                 <p class="subtitulo">Apresente este ticket na entrada do evento.</p>
                 
-                <div class="ingresso-card">
-                    <div class="ingresso-topo">
-                        <div>
-                            <div class="ingresso-sub">Ingresso do Evento</div>
-                            <h3 class="ingresso-titulo">ADMIN 2.0</h3>
-                        </div>
-                        <div style="text-align: right;">
-                            <span style="font-size: 10px; color: var(--texto-mutado);">VAGA VIP</span>
-                            <div id="ticket-vaga" style="font-size: 24px; color: white; font-weight: bold;">#000</div>
+                <div class="impressora-wrapper">
+                    <div class="impressora-fenda"></div>
+                    <div class="ticket-mask">
+                        <div class="ingresso-card" id="meu-ingresso-card">
+                            <div class="ingresso-topo">
+                                <div>
+                                    <div class="ingresso-sub">Ingresso do Evento</div>
+                                    <h3 class="ingresso-titulo">ADMIN 2.0</h3>
+                                </div>
+                                <div style="text-align: right;">
+                                    <span style="font-size: 10px; color: var(--texto-mutado);">VAGA VIP</span>
+                                    <div id="ticket-vaga" style="font-size: 24px; color: white; font-weight: bold;">#000</div>
+                                </div>
+                            </div>
+                            
+                            <div class="ingresso-dados">
+                                <div class="dado-bloco"><span>Nome do Titular</span><strong id="ticket-nome">Carregando...</strong></div>
+                                <div class="dado-bloco"><span>CPF Registrado</span><strong id="ticket-cpf">000.***.***-00</strong></div>
+                                <div class="dado-bloco"><span>Data</span><strong>28 Setembro</strong></div>
+                                <div class="dado-bloco"><span>Local</span><strong>Auditório Principal - SENAI</strong></div>
+                            </div>
+                            
+                            <div class="linha-tracejada"></div>
+                            
+                            <div style="text-align: center; margin-top: 15px; margin-bottom: 10px;">
+                                <img id="qr-code" src="" alt="QR Code" style="width: 120px; height: 120px; border-radius: 8px; padding: 8px; background: white; display: none;">
+                            </div>
                         </div>
                     </div>
-                    
-                    <div class="ingresso-dados">
-                        <div class="dado-bloco"><span>Nome do Titular</span><strong id="ticket-nome">Carregando...</strong></div>
-                        <div class="dado-bloco"><span>CPF Registrado</span><strong id="ticket-cpf">000.***.***-00</strong></div>
-                        <div class="dado-bloco"><span>Data</span><strong>28 Setembro</strong></div>
-                        <div class="dado-bloco"><span>Local</span><strong>Auditório Principal -SENAI</strong></div>
-                    </div>
-
-                    <div class="linha-tracejada"></div>
-
-        <!-- QR Code Real para o Check-in -->
-        <div style="text-align: center; margin-top: 15px; margin-bottom: 10px;">
-            <img id="qr-code" src="" alt="QR Code" style="width: 120px; height: 120px; border-radius: 8px; padding: 8px; background: white; display: none;">
-        </div>
-    </div>
-                
-                <button class="btn-acao" style="margin-top: 20px; background: transparent; border: 1px solid var(--texto-claro); color: var(--texto-claro);" onclick="alternarTela('buscar')">Voltar</button>
+                    <button class="btn-acao" style="margin-top: 20px;">Salvar Imagem</button>
+                    <button class="btn-acao" style="margin-top: 20px; background: transparent; border: 1px solid var(--texto-claro); color: var(--texto-claro);" onclick="alternarTela('form')">Voltar</button>
+                </div>
             </div>
 
             <!-- TELA 4: PROGRAMAÇÃO -->
-            <div id="tela-info">
+            <div id="tela-info" class="tela-secao">
                 <h2>Line-up do Evento</h2>
                 <p class="subtitulo">Confira o cronograma do Dia do Administrador.</p>
                 
@@ -318,15 +319,13 @@
                         <p class="agenda-palestrante">Recepção dos alunos e convidados</p>
                     </div>
                 </div>
-                
                 <div class="agenda-item">
                     <div class="agenda-hora">14:40</div>
                     <div>
-                        <h4 class="agenda-titulo">EM Breve</h4>
+                        <h4 class="agenda-titulo">Em Breve</h4>
                         <p class="agenda-palestrante">Palestrante: Em Breve</p>
                     </div>
                 </div>
-
                 <div class="agenda-item">
                     <div class="agenda-hora">16:00</div>
                     <div>
@@ -335,7 +334,7 @@
                     </div>
                 </div>
             </div>
-
+            
         </div>
     </div>
 
@@ -360,7 +359,7 @@
 
         // --- VALIDAÇÃO CPF ---
         function validarCPF(cpf) {
-            cpf = cpf.replace(/[^\d]+/g, ''); 
+            cpf = cpf.replace(/[^\d]+/g, '');
             if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false;
             let soma = 0, resto;
             for (let i = 1; i <= 9; i++) soma += parseInt(cpf.substring(i-1, i)) * (11 - i);
@@ -375,37 +374,25 @@
             return true;
         }
 
-        // --- NAVEGAÇÃO ---
-        function alternarTela(tela) {
-            document.getElementById('tela-form').style.display = 'none';
-            document.getElementById('tela-buscar').style.display = 'none';
-            document.getElementById('tela-ingresso').style.display = 'none';
-            document.getElementById('tela-info').style.display = 'none';
+        // --- NAVEGAÇÃO OTIMIZADA ---
+        function alternarTela(telaId) {
+            document.querySelectorAll('.tela-secao').forEach(tela => tela.style.display = 'none');
+            document.querySelectorAll('.aba-btn').forEach(btn => btn.classList.remove('ativa'));
             
-            const botoes = document.querySelectorAll('.aba-btn');
-            botoes.forEach(b => b.classList.remove('ativa'));
+            const telaAlvo = document.getElementById(`tela-${telaId}`);
+            if (telaAlvo) telaAlvo.style.display = 'block';
+            
+            const botaoAtivo = document.querySelector(`.aba-btn[data-target="${telaId}"]`);
+            if (botaoAtivo) botaoAtivo.classList.add('ativa');
 
-            if (tela === 'form') {
-                document.getElementById('tela-form').style.display = 'block';
-                botoes[0].classList.add('ativa');
-            } else if (tela === 'buscar') {
-                document.getElementById('tela-buscar').style.display = 'block';
-                botoes[1].classList.add('ativa');
-            } else if (tela === 'info') {
-                document.getElementById('tela-info').style.display = 'block';
-                botoes[2].classList.add('ativa');
-            } else if (tela === 'ingresso') {
-    document.getElementById('tela-ingresso').style.display = 'block';
-    botoes[1].classList.add('ativa');
-
-    // Mágica da animação:
-    const ticket = document.querySelector('.ingresso-card');
-    ticket.classList.remove('animacao-impressao'); // Remove a animação anterior
-    
-    void ticket.offsetWidth; // Truque Jedi do CSS para forçar o reinício da animação
-    
-    ticket.classList.add('animacao-impressao'); // Adiciona a animação novamente
-}
+            if (telaId === 'ingresso') {
+                const ticket = document.getElementById('meu-ingresso-card');
+                if (ticket) {
+                    ticket.classList.remove('animacao-impressao');
+                    void ticket.offsetWidth;
+                    ticket.classList.add('animacao-impressao');
+                }
+            }
         }
 
         // --- SUBMIT DA INSCRIÇÃO ---
@@ -416,8 +403,14 @@
             const whatsapp = document.getElementById('whatsapp').value;
             const msg = document.getElementById('msg-form');
 
-            if (!validarCPF(cpf)) { msg.style.color = "var(--vermelho-senai)"; msg.textContent = "CPF inválido!"; return; }
-            msg.style.color = "var(--azul-senai)"; msg.textContent = "Processando...";
+            if (!validarCPF(cpf)) {
+                msg.style.color = "var(--vermelho-senai)"; 
+                msg.textContent = "CPF inválido!"; 
+                return; 
+            }
+            
+            msg.style.color = "var(--azul-senai)"; 
+            msg.textContent = "Processando...";
 
             try {
                 const res = await fetch('/api/inscrever', {
@@ -426,30 +419,27 @@
                     body: JSON.stringify({ nome, cpf, whatsapp })
                 });
                 const dados = await res.json();
-                
-                if (res.ok) {
-        document.getElementById('formInscricao').reset();
-        msg.textContent = "";
-        
-        // Pula direto para a tela de Ingresso preenchida!
-        document.getElementById('ticket-nome').textContent = nome;
-        document.getElementById('ticket-cpf').textContent = cpf;
-        // Nota: na sua imagem está dados.vaga, vou manter assim para não quebrar seu código!
-        document.getElementById('ticket-vaga').textContent = `#${String(dados.vaga).padStart(3, '0')}`;
-        
-        // ---> CÓDIGO DO QR CODE AQUI <---
-        const imgQrCode = document.getElementById('qr-code');
-        // Usa o dados.vaga (ou dados.id se o seu backend retornar o ID aqui)
-        imgQrCode.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${dados.vaga}`;
-        imgQrCode.style.display = "inline-block";
-        // ---------------------------------
 
-        alternarTela('ingresso');
-    } else {
-                    msg.style.color = "var(--vermelho-senai)"; msg.textContent = dados.erro;
+                if (res.ok) {
+                    document.getElementById('formInscricao').reset();
+                    msg.textContent = "";
+                    
+                    document.getElementById('ticket-nome').textContent = nome;
+                    document.getElementById('ticket-cpf').textContent = cpf;
+                    document.getElementById('ticket-vaga').textContent = `#${String(dados.vaga || '0').padStart(3, '0')}`;
+                    
+                    const imgQrCode = document.getElementById('qr-code');
+                    imgQrCode.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${dados.vaga || '0'}`;
+                    imgQrCode.style.display = "inline-block";
+
+                    alternarTela('ingresso');
+                } else {
+                    msg.style.color = "var(--vermelho-senai)"; 
+                    msg.textContent = dados.erro || "Erro ao inscrever.";
                 }
             } catch (err) {
-                msg.style.color = "var(--vermelho-senai)"; msg.textContent = "Erro na conexão.";
+                msg.style.color = "var(--vermelho-senai)"; 
+                msg.textContent = "Erro na conexão.";
             }
         });
 
@@ -457,32 +447,38 @@
         async function buscarIngresso() {
             const cpf = document.getElementById('cpf-busca').value;
             const msg = document.getElementById('msg-busca');
+
+            if (!validarCPF(cpf)) { 
+                msg.style.color = "var(--vermelho-senai)"; 
+                msg.textContent = "CPF inválido!"; 
+                return; 
+            }
             
-            if (!validarCPF(cpf)) { msg.style.color = "var(--vermelho-senai)"; msg.textContent = "CPF inválido!"; return; }
-            msg.style.color = "var(--azul-senai)"; msg.textContent = "Procurando no banco de dados...";
+            msg.style.color = "var(--azul-senai)"; 
+            msg.textContent = "Procurando no banco de dados...";
 
             try {
                 const res = await fetch(`/api/ingresso/${cpf.replace(/\D/g, '')}`);
                 const dados = await res.json();
-                
-                if (res.ok) {
-            msg.textContent = "";
-            document.getElementById('ticket-nome').textContent = dados.nome;
-            document.getElementById('ticket-cpf').textContent = cpf; // mantendo a máscara
-            document.getElementById('ticket-vaga').textContent = `#${String(dados.id).padStart(3, '0')}`;
-            
-            // ---> CÓDIGO DO QR CODE AQUI <---
-            const imgQrCode = document.getElementById('qr-code');
-            imgQrCode.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${dados.id}`;
-            imgQrCode.style.display = "inline-block";
-            // ---------------------------------
 
-            alternarTela('ingresso');
-        } else {
-                    msg.style.color = "var(--vermelho-senai)"; msg.textContent = "Ingresso não encontrado.";
+                if (res.ok) {
+                    msg.textContent = "";
+                    document.getElementById('ticket-nome').textContent = dados.nome;
+                    document.getElementById('ticket-cpf').textContent = cpf;
+                    document.getElementById('ticket-vaga').textContent = `#${String(dados.id || '0').padStart(3, '0')}`;
+                    
+                    const imgQrCode = document.getElementById('qr-code');
+                    imgQrCode.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${dados.id || '0'}`;
+                    imgQrCode.style.display = "inline-block";
+                    
+                    alternarTela('ingresso');
+                } else {
+                    msg.style.color = "var(--vermelho-senai)"; 
+                    msg.textContent = "Ingresso não encontrado.";
                 }
             } catch (err) {
-                msg.style.color = "var(--vermelho-senai)"; msg.textContent = "Erro de conexão.";
+                msg.style.color = "var(--vermelho-senai)"; 
+                msg.textContent = "Erro de conexão.";
             }
         }
     </script>
