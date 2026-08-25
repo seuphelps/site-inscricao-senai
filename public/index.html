@@ -271,10 +271,12 @@
                     </div>
 
                     <div class="linha-tracejada"></div>
-                    
-                    <!-- Falso código de barras gerado com CSS para dar o estilo da imagem 4 -->
-                    <div class="codigo-barras"></div>
-                </div>
+
+        <!-- QR Code Real para o Check-in -->
+        <div style="text-align: center; margin-top: 15px; margin-bottom: 10px;">
+            <img id="qr-code" src="" alt="QR Code" style="width: 120px; height: 120px; border-radius: 8px; padding: 8px; background: white; display: none;">
+        </div>
+    </div>
                 
                 <button class="btn-acao" style="margin-top: 20px; background: transparent; border: 1px solid var(--texto-claro); color: var(--texto-claro);" onclick="alternarTela('buscar')">Voltar</button>
             </div>
@@ -401,14 +403,24 @@
                 const dados = await res.json();
                 
                 if (res.ok) {
-                    document.getElementById('formInscricao').reset();
-                    msg.textContent = "";
-                    // Pula direto para a tela de Ingresso preenchida!
-                    document.getElementById('ticket-nome').textContent = nome;
-                    document.getElementById('ticket-cpf').textContent = cpf;
-                    document.getElementById('ticket-vaga').textContent = `#${String(dados.vaga).padStart(3, '0')}`;
-                    alternarTela('ingresso');
-                } else {
+        document.getElementById('formInscricao').reset();
+        msg.textContent = "";
+        
+        // Pula direto para a tela de Ingresso preenchida!
+        document.getElementById('ticket-nome').textContent = nome;
+        document.getElementById('ticket-cpf').textContent = cpf;
+        // Nota: na sua imagem está dados.vaga, vou manter assim para não quebrar seu código!
+        document.getElementById('ticket-vaga').textContent = `#${String(dados.vaga).padStart(3, '0')}`;
+        
+        // ---> CÓDIGO DO QR CODE AQUI <---
+        const imgQrCode = document.getElementById('qr-code');
+        // Usa o dados.vaga (ou dados.id se o seu backend retornar o ID aqui)
+        imgQrCode.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${dados.vaga}`;
+        imgQrCode.style.display = "inline-block";
+        // ---------------------------------
+
+        alternarTela('ingresso');
+    } else {
                     msg.style.color = "var(--vermelho-senai)"; msg.textContent = dados.erro;
                 }
             } catch (err) {
@@ -429,12 +441,19 @@
                 const dados = await res.json();
                 
                 if (res.ok) {
-                    msg.textContent = "";
-                    document.getElementById('ticket-nome').textContent = dados.nome;
-                    document.getElementById('ticket-cpf').textContent = cpf; // mantendo a máscara
-                    document.getElementById('ticket-vaga').textContent = `#${String(dados.id).padStart(3, '0')}`;
-                    alternarTela('ingresso');
-                } else {
+            msg.textContent = "";
+            document.getElementById('ticket-nome').textContent = dados.nome;
+            document.getElementById('ticket-cpf').textContent = cpf; // mantendo a máscara
+            document.getElementById('ticket-vaga').textContent = `#${String(dados.id).padStart(3, '0')}`;
+            
+            // ---> CÓDIGO DO QR CODE AQUI <---
+            const imgQrCode = document.getElementById('qr-code');
+            imgQrCode.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${dados.id}`;
+            imgQrCode.style.display = "inline-block";
+            // ---------------------------------
+
+            alternarTela('ingresso');
+        } else {
                     msg.style.color = "var(--vermelho-senai)"; msg.textContent = "Ingresso não encontrado.";
                 }
             } catch (err) {
