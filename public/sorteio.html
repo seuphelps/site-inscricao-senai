@@ -47,7 +47,6 @@
             color: #888;
         }
 
-        /* Displays da Roleta */
         .display-box {
             background-color: #0a0a0a;
             border: 2px solid var(--borda);
@@ -91,12 +90,10 @@
     <div class="container">
         <div class="titulo">Sorteio Oficial</div>
         
-        <!-- Roleta do Brinde -->
         <div class="display-box">
             <div class="display-brinde" id="brinde-txt">🎁 Aguardando...</div>
         </div>
 
-        <!-- Roleta do Ganhador -->
         <div class="display-box" style="height: 80px;">
             <div class="display-nome" id="nome-txt">? ? ?</div>
         </div>
@@ -107,13 +104,17 @@
     </div>
 
     <script>
-        // Lista de Brindes (Você pode alterar os nomes aqui)
+        // Configuração dos Áudios
+        const somSuspense = new Audio('./audios/suspense.mp3');
+        const somVitoria = new Audio('./audios/vitoria.mp3');
+        somSuspense.loop = true; // O suspense fica tocando em loop até a gente mandar parar
+
+        // Lista de Brindes (Deixei 4 de exemplo)
         let listaBrindes = [
-            "Kit Exclusivo SENAI",
-            "Garrafa Térmica",
-            "Mochila Executiva",
-            "Powerbank 10.000mAh",
-            "Caderno Inteligente"
+            "Brinde Surpresa 1",
+            "Brinde Surpresa 2",
+            "Brinde Surpresa 3",
+            "Brinde Surpresa 4"
         ];
         
         let participantes = [];
@@ -145,13 +146,11 @@
 
         function animarRoleta(elemento, arrayOpcoes, duracao, callback) {
             let contador = 0;
-            let velocidade = 50; // milissegundos
+            let velocidade = 50; 
             const totalGiros = duracao / velocidade;
 
             const intervalo = setInterval(() => {
                 const itemAleatorio = arrayOpcoes[Math.floor(Math.random() * arrayOpcoes.length)];
-                
-                // Se for objeto (participante), pega o nome. Se for string (brinde), pega direto.
                 elemento.textContent = itemAleatorio.nome || itemAleatorio;
                 contador++;
 
@@ -167,31 +166,36 @@
             if (participantes.length === 0) return alert("Nenhum inscrito para sortear!");
             if (listaBrindes.length === 0) return;
 
+            // Inicia o som de suspense
+            somSuspense.currentTime = 0; // Zera o áudio caso já tenha tocado
+            somSuspense.play();
+
             btn.disabled = true;
             btn.textContent = "Sorteando Prêmio...";
             nomeTxt.textContent = "----------";
             ticketTxt.textContent = "";
 
-            // ETAPA 1: Roda o Brinde (2 segundos)
             animarRoleta(brindeTxt, listaBrindes, 2000, (brindeSorteado) => {
                 brindeTxt.textContent = `🎁 ${brindeSorteado}`;
-                
-                // Remove o brinde sorteado da lista
                 listaBrindes = listaBrindes.filter(b => b !== brindeSorteado);
                 atualizarStatus();
 
-                // ETAPA 2: Roda o Participante (2.5 segundos)
                 btn.textContent = "Sorteando Ganhador...";
                 
                 setTimeout(() => {
-                    animarRoleta(nomeTxt, participantes, 2500, (ganhador) => {
+                    animarRoleta(nomeTxt, participantes, 3500, (ganhador) => {
+                        // Para o suspense e toca a comemoração
+                        somSuspense.pause();
+                        somVitoria.currentTime = 0;
+                        somVitoria.play();
+
                         nomeTxt.textContent = ganhador.nome;
                         ticketTxt.textContent = `Ticket: #${String(ganhador.id).padStart(3, '0')}`;
                         
                         btn.textContent = "Rodar Novamente";
                         btn.disabled = false;
                     });
-                }, 500); // Pausa dramática de meio segundo
+                }, 500); 
             });
         }
 
