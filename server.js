@@ -96,6 +96,32 @@ app.get('/api/sorteio/participantes', async (req, res) => {
     res.json(data);
 });
 
+// Rota para exportar CSV (Excel)
+app.get('/api/admin/exportar', async (req, res) => {
+    const { data, error } = await supabase
+        .from('inscritos')
+        .select('*')
+        .order('id', { ascending: true });
+
+    if (error) {
+        return res.status(500).send('Erro ao buscar dados');
+    }
+
+    // Cria o cabeçalho da planilha
+    let csv = 'ID,Nome,CPF,Email,Status\n';
+
+    // Preenche as linhas com os dados
+    data.forEach(row => {
+        const status = row.presente ? 'Presente' : 'Ausente';
+        csv += `${row.id},"${row.nome}","${row.cpf}","${row.email}","${status}"\n`;
+    });
+
+    // Configura o navegador para baixar o arquivo
+    res.header('Content-Type', 'text/csv; charset=utf-8');
+    res.attachment('inscritos_senai.csv');
+    return res.send(csv);
+});
+
 app.listen(PORT, () => {
     console.log(`🚀 Servidor Supabase rodando na porta ${PORT}`);
 });
