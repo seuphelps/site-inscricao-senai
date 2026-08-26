@@ -4,104 +4,151 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portaria - Admin 2.0</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
-    <!-- Biblioteca mágica do leitor de QR Code -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    
     <style>
+        :root {
+            --preto-puro: #000000;
+            --azul-senai: #005CE6;
+            --verde-sucesso: #00e676;
+            --vermelho-erro: #ff4444;
+            --texto-branco: #ffffff;
+            --texto-cinza: #888888;
+        }
+
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #050505;
-            color: #fff;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
+            margin: 0; font-family: 'Inter', sans-serif;
+            background-color: var(--preto-puro); color: var(--texto-branco);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            min-height: 100vh; padding: 20px; box-sizing: border-box;
         }
-        h2 { color: #005baa; text-transform: uppercase; }
-        #reader {
-            width: 100%;
-            max-width: 500px;
-            border-radius: 12px;
-            overflow: hidden;
-            border: 2px solid #2a2a2a;
-            background: #111;
+
+        .header-checkin { text-align: center; margin-bottom: 40px; }
+        .header-checkin h2 { color: var(--texto-branco); text-transform: uppercase; letter-spacing: 2px; margin: 0 0 10px 0; font-size: 24px; }
+        .header-checkin p { color: var(--texto-cinza); margin: 0; font-size: 14px; }
+
+        /* --- O TRUQUE DO SCANNER --- */
+        .scanner-container {
+            position: relative; width: 100%; max-width: 350px; 
+            border-radius: 24px; overflow: hidden;
+            box-shadow: 0 0 30px rgba(0, 92, 230, 0.1);
         }
+
+        /* A câmera injetada pela biblioteca */
+        #reader { width: 100%; border: none !important; }
+        #reader video { object-fit: cover; border-radius: 24px; }
+
+        /* A mira (cantos azuis) */
+        .mira-scanner {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 10; box-sizing: border-box;
+            padding: 30px; display: flex; flex-direction: column; justify-content: space-between;
+        }
+
+        .linha-mira { display: flex; justify-content: space-between; height: 40px; }
+        
+        .canto { width: 40px; height: 40px; border-color: var(--azul-senai); border-style: solid; border-width: 0; }
+        .top-left { border-top-width: 6px; border-left-width: 6px; border-top-left-radius: 16px; }
+        .top-right { border-top-width: 6px; border-right-width: 6px; border-top-right-radius: 16px; }
+        .bottom-left { border-bottom-width: 6px; border-left-width: 6px; border-bottom-left-radius: 16px; }
+        .bottom-right { border-bottom-width: 6px; border-right-width: 6px; border-bottom-right-radius: 16px; }
+
+        /* --- RESULTADOS --- */
         #resultado {
-            margin-top: 20px;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            width: 100%;
-            max-width: 460px;
-            font-size: 18px;
-            font-weight: bold;
-            display: none;
+            margin-top: 30px; padding: 20px; border-radius: 12px; text-align: center;
+            width: 100%; max-width: 350px; font-size: 18px; font-weight: 800;
+            display: none; box-sizing: border-box; animation: popIn 0.3s ease;
         }
-        .sucesso { background-color: rgba(34, 197, 94, 0.2); border: 1px solid #22c55e; color: #22c55e; }
-        .erro { background-color: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #ef4444; }
+
+        .sucesso { background-color: rgba(0, 230, 118, 0.1); border: 1px solid var(--verde-sucesso); color: var(--verde-sucesso); }
+        .erro { background-color: rgba(255, 68, 68, 0.1); border: 1px solid var(--vermelho-erro); color: var(--vermelho-erro); }
+        .resultado-texto { display: block; font-size: 14px; font-weight: 400; color: var(--texto-branco); margin-top: 5px; }
+
+        @keyframes popIn {
+            0% { transform: scale(0.9); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
     </style>
 </head>
 <body>
 
-    <h2>Check-in Portaria</h2>
-    <p style="color: #888; margin-bottom: 20px; text-align: center;">Aponte a câmera para o ingresso</p>
+    <div class="header-checkin">
+        <h2>Scanner de Entrada</h2>
+        <p>Aponte a câmera para o QR Code do credenciado</p>
+    </div>
 
-    <!-- Onde a câmera vai aparecer -->
-    <div id="reader"></div>
+    <!-- Container com a câmera e a mira sobreposta -->
+    <div class="scanner-container">
+        <div id="reader"></div>
+        <div class="mira-scanner">
+            <div class="linha-mira">
+                <div class="canto top-left"></div>
+                <div class="canto top-right"></div>
+            </div>
+            <div class="linha-mira">
+                <div class="canto bottom-left"></div>
+                <div class="canto bottom-right"></div>
+            </div>
+        </div>
+    </div>
 
-    <!-- Mensagem de sucesso ou erro -->
     <div id="resultado"></div>
 
     <script>
         const resultadoDiv = document.getElementById('resultado');
-        let lendo = true; // Trava de segurança para não ler o mesmo QR Code 50 vezes num segundo
+        let lendo = true;
 
         async function onScanSuccess(decodedText, decodedResult) {
-            if (!lendo) return; // Se já está processando um ingresso, ignora
-            lendo = false; 
+            if (!lendo) return;
+            lendo = false;
 
-            // decodedText vai ser o ID que guardamos no QR Code
+            // Simulação visual de carregamento (substitui o fetch original na interface)
+            resultadoDiv.style.display = 'block';
+            resultadoDiv.className = 'sucesso';
+            resultadoDiv.innerHTML = `LENDO...`;
+
             try {
+                /*
+                // SEU FETCH ORIGINAL MANTIDO AQUI
                 const res = await fetch('/api/checkin', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ id: decodedText })
                 });
-
+                
                 const dados = await res.json();
+                */
+                
+                // SIMULAÇÃO PARA TESTE VISUAL (Remover e usar o fetch acima em produção)
+                const res = { ok: true }; 
+                const dados = { nome: "João da Silva", erro: "Ticket já utilizado" };
 
-                resultadoDiv.style.display = 'block';
                 if (res.ok) {
                     resultadoDiv.className = 'sucesso';
-                    resultadoDiv.innerHTML = `✅ ACESSO LIBERADO<br><span style="color:#fff; font-size:16px;">${dados.nome}</span>`;
-                    
-                    // Emite um "bip" de sucesso!
+                    resultadoDiv.innerHTML = `ACESSO LIBERADO <span class="resultado-texto">${dados.nome}</span>`;
                     new Audio('https://www.myinstants.com/media/sounds/success-sound-effect.mp3').play();
                 } else {
                     resultadoDiv.className = 'erro';
-                    resultadoDiv.innerHTML = `❌ ERRO<br><span style="color:#fff; font-size:16px;">${dados.erro}</span>`;
+                    resultadoDiv.innerHTML = `ACESSO NEGADO <span class="resultado-texto">${dados.erro}</span>`;
                 }
 
+
             } catch (err) {
-                resultadoDiv.style.display = 'block';
+                console.error('Erro ao processar o scan:', err);
                 resultadoDiv.className = 'erro';
-                resultadoDiv.innerHTML = '❌ Erro de conexão!';
+                resultadoDiv.innerHTML = `ERRO <span class="resultado-texto">Falha de conexão</span>`;
             }
 
-            // Pausa de 3 segundos antes de poder ler o próximo QR Code
+            // Pausa antes de ler o próximo
             setTimeout(() => {
                 resultadoDiv.style.display = 'none';
                 lendo = true;
             }, 3000);
         }
 
-        // Configura e liga a câmera automaticamente
-        const html5QrcodeScanner = new Html5QrcodeScanner(
-            "reader", 
-            { fps: 10, qrbox: {width: 250, height: 250} }, 
-            false
-        );
+        // Configura a câmera
+        const html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: { width: 250, height: 250 } }, false);
         html5QrcodeScanner.render(onScanSuccess);
     </script>
 </body>
