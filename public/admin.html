@@ -1,98 +1,138 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+    <script>
+    // Trava de segurança simples
+    const senha = prompt("🔒 Acesso Restrito. Digite a senha do Administrador:");
+    
+    if (senha !== "admin2026") { // Você pode mudar a senha aqui
+        alert("Senha incorreta!");
+        window.location.href = "/"; // Expulsa a pessoa de volta para a página inicial
+    }
+</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Dia do Administrador</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-    
-    <script>
-        // Trava de segurança simples mantida
-        const senha = prompt("🔒 Acesso Restrito. Digite a senha do Administrador:");
-        if (senha !== "admin2026") {
-            alert("Senha incorreta!");
-            window.location.href = "/";
-        }
-    </script>
-
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <a href="/api/admin/exportar" target="_blank"></a>
     <style>
         :root {
-            --preto-puro: #000000;
-            --preto-card: #0a0a0a;
-            --azul-senai: #005CE6;
-            --vermelho-erro: #ff4444;
-            --verde-sucesso: #00e676;
-            --texto-branco: #ffffff;
-            --texto-cinza: #888888;
-            --borda: #222222;
+            --fundo-escuro: #0a0a0a;
+            --fundo-card: #141414;
+            --azul-senai: #005baa;
+            --vermelho-senai: #e3000f;
+            --texto-claro: #f0f4f8;
+            --texto-mutado: #888888;
+            --borda: #2a2a2a;
+            --card-blue: rgba(0, 91, 170, 0.15);
+            --card-green: rgba(34, 197, 94, 0.15);
         }
 
         body {
-            margin: 0; font-family: 'Inter', sans-serif;
-            background-color: var(--preto-puro); color: var(--texto-branco);
-            display: flex; justify-content: center; padding: 40px 20px;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--fundo-escuro);
+            color: var(--texto-claro);
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
         }
 
         .dashboard-container { width: 100%; max-width: 1200px; }
 
-        /* --- HEADER --- */
-        .header-dash { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px; }
-        .header-dash h1 { margin: 0; font-size: 2rem; font-weight: 800; }
-        .badge-admin { background-color: rgba(0, 92, 230, 0.15); color: var(--azul-senai); padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 800; border: 1px solid var(--azul-senai); margin-bottom: 10px; display: inline-block;}
-        
-        .acoes-topo { display: flex; gap: 15px; }
-        .btn-outline { background: transparent; border: 1px solid var(--borda); color: var(--texto-branco); padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.3s; }
-        .btn-outline:hover { border-color: var(--texto-branco); }
-        .btn-exportar { background-color: var(--texto-branco); color: var(--preto-puro); border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 800; transition: 0.3s; text-decoration: none; }
-        .btn-exportar:hover { background-color: var(--azul-senai); color: var(--texto-branco); }
+        .header-dash {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
 
-        /* --- BENTO BOX GRID --- */
-        .bento-grid {
+        h1 { margin: 0; font-size: 28px; font-weight: 800; }
+        .badge-admin { background-color: var(--azul-senai); color: white; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; text-transform: uppercase; }
+
+        .cards-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 20px;
+            margin-bottom: 40px;
         }
 
-        .bento-card {
-            background-color: var(--preto-card); border: 1px solid var(--borda);
-            border-radius: 24px; padding: 30px; display: flex; flex-direction: column;
-            justify-content: space-between; position: relative; overflow: hidden;
+        .card-resumo {
+            background-color: var(--fundo-card);
+            border: 1px solid var(--borda);
+            border-radius: 16px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
 
-        /* Span de colunas para formar os blocos */
-        .card-stats { grid-column: span 2; }
-        .card-table { grid-column: span 4; padding: 0; } /* Tabela ocupa tudo e não tem padding no container */
+        .card-resumo.azul { border-top: 4px solid var(--azul-senai); background: linear-gradient(180deg, var(--card-blue) 0%, transparent 100%); }
+        .card-resumo.verde { border-top: 4px solid #22c55e; background: linear-gradient(180deg, var(--card-green) 0%, transparent 100%); }
 
-        .card-titulo { color: var(--texto-cinza); font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
-        .card-valor { font-size: 3rem; font-weight: 800; margin: 10px 0 0 0; }
-        
-        /* Efeitos visuais de fundo nos cards */
-        .glow-azul { background: radial-gradient(circle at top right, rgba(0, 92, 230, 0.1), transparent 70%), var(--preto-card); border-top: 2px solid var(--azul-senai); }
-        .glow-verde { background: radial-gradient(circle at top right, rgba(0, 230, 118, 0.05), transparent 70%), var(--preto-card); border-top: 2px solid var(--verde-sucesso); }
+        .card-titulo { color: var(--texto-mutado); font-size: 14px; font-weight: 600; text-transform: uppercase; }
+        .card-valor { font-size: 36px; font-weight: 800; color: white; margin: 0; }
 
-        /* --- TABELA DE DADOS --- */
-        .tabela-wrapper { overflow-x: auto; width: 100%; }
+        .tabela-container {
+            background-color: var(--fundo-card);
+            border: 1px solid var(--borda);
+            border-radius: 16px;
+            overflow-x: auto;
+        }
+
         table { width: 100%; border-collapse: collapse; text-align: left; }
         
-        thead th { background-color: #111; color: var(--texto-cinza); font-size: 12px; text-transform: uppercase; padding: 20px; border-bottom: 1px solid var(--borda); font-weight: 600; }
-        tbody td { padding: 20px; border-bottom: 1px solid var(--borda); font-size: 14px; color: var(--texto-branco); }
-        
-        tbody tr { transition: 0.2s; }
-        tbody tr:hover { background-color: #151515; }
+        thead th {
+            background-color: #1a1a1a;
+            color: var(--texto-mutado);
+            font-size: 12px;
+            text-transform: uppercase;
+            padding: 20px;
+            border-bottom: 1px solid var(--borda);
+        }
+
+        tbody td {
+            padding: 20px;
+            border-bottom: 1px solid var(--borda);
+            font-size: 14px;
+            color: var(--texto-claro);
+        }
+
+        tbody tr:hover { background-color: #1c1c1c; }
         tbody tr:last-child td { border-bottom: none; }
 
-        .ticket-id { font-family: 'Space Mono', monospace; color: var(--azul-senai); font-weight: bold; }
-        .status-badge { background-color: rgba(0, 230, 118, 0.1); color: var(--verde-sucesso); padding: 6px 12px; border-radius: 12px; font-size: 12px; font-weight: 800; border: 1px solid rgba(0, 230, 118, 0.3); }
-
-        /* Botão Excluir */
-        .btn-deletar { background: rgba(255, 68, 68, 0.1); border: 1px solid rgba(255, 68, 68, 0.3); color: var(--vermelho-erro); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 12px; transition: 0.2s; }
-        .btn-deletar:hover { background: var(--vermelho-erro); color: var(--texto-branco); }
-
-        @media (max-width: 900px) {
-            .bento-grid { grid-template-columns: 1fr; }
-            .card-stats, .card-table { grid-column: span 1; }
-            .header-dash { flex-direction: column; align-items: flex-start; gap: 20px; }
+        .status-badge {
+            background-color: rgba(34, 197, 94, 0.2);
+            color: #4ade80;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: bold;
         }
+
+        /* Botão de Excluir */
+        .btn-deletar {
+            background: rgba(227, 0, 15, 0.15);
+            border: 1px solid var(--vermelho-senai);
+            color: #ff6b6b;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-deletar:hover {
+            background: var(--vermelho-senai);
+            color: white;
+        }
+
+        .btn-refresh {
+            background-color: transparent; border: 1px solid var(--borda); color: var(--texto-claro);
+            padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.3s;
+        }
+        .btn-refresh:hover { background-color: var(--borda); }
     </style>
 </head>
 <body>
@@ -101,115 +141,103 @@
         
         <div class="header-dash">
             <div>
-                <span class="badge-admin">Modo Administrador</span>
                 <h1>Gestão de Inscrições</h1>
-                <p style="color: var(--texto-cinza); margin-top: 5px;">Acompanhe os dados do evento em tempo real.</p>
+                <p style="color: var(--texto-mutado); margin-top: 5px;">Acompanhe os dados do evento em tempo real.</p>
             </div>
-            <div class="acoes-topo">
-                <button class="btn-outline" onclick="carregarDados()">↻ Atualizar</button>
-                <a href="/api/admin/exportar" class="btn-exportar" target="_blank">📥 Baixar Excel</a>
+            <div>
+                <span class="badge-admin">Modo Administrador</span>
+                <button class="btn-refresh" onclick="carregarDados()">↻ Atualizar</button>
+                <a href="/api/admin/exportar" target="_blank">
+    <button style="background-color: #22c55e; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">
+        📊 Baixar Relatório (Excel)
+    </button>
+</a>
             </div>
         </div>
 
-        <div class="bento-grid">
-            <!-- Bloco 1: Total -->
-            <div class="bento-card card-stats glow-azul">
+        <div class="cards-grid">
+            <div class="card-resumo azul">
                 <span class="card-titulo">Total de Inscritos</span>
-                <p class="card-valor" id="total-inscritos">0</p>
+                <h2 class="card-valor" id="total-inscritos">0</h2>
             </div>
-
-            <!-- Bloco 2: Status do Servidor -->
-            <div class="bento-card card-stats glow-verde">
-                <span class="card-titulo">Status do Banco</span>
-                <p class="card-valor" style="font-size: 2rem; color: var(--verde-sucesso);">Supabase Online</p>
-            </div>
-
-            <!-- Bloco 3: Tabela Full Width -->
-            <div class="bento-card card-table">
-                <div class="tabela-wrapper">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Ticket</th>
-                                <th>Nome do Participante</th>
-                                <th>CPF</th>
-                                <th>WhatsApp</th>
-                                <th>Status</th>
-                                <th>Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabela-corpo">
-                            <tr><td colspan="6" style="text-align: center; color: var(--texto-cinza);">Carregando dados...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
+            <div class="card-resumo verde">
+                <span class="card-titulo">Status do Sistema</span>
+                <h2 class="card-valor" style="font-size: 24px; padding-top: 10px; color: #4ade80;">Supabase Online</h2>
             </div>
         </div>
 
+        <div class="tabela-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ticket</th>
+                        <th>Nome do Participante</th>
+                        <th>CPF</th>
+                        <th>WhatsApp</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="tabela-corpo">
+                    <tr><td colspan="6" style="text-align: center; color: var(--texto-mutado);">Carregando dados...</td></tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <script>
-        // Função original mantida com ajustes para as novas classes CSS
         async function carregarDados() {
             const tbody = document.getElementById('tabela-corpo');
             const contador = document.getElementById('total-inscritos');
-
+            
             try {
-                // MOCK DE DADOS PARA TESTE VISUAL (Substitua pelo fetch comentado abaixo)
-                /*
-                const res = await fetch('/api/admin/listar');
-                const dados = await res.json();
-                */
-                const res = { ok: true };
-                const dados = [
-                    { id: 1, nome: "João da Silva", cpf: "111.222.333-44", whatsapp: "(11) 99999-9999" },
-                    { id: 42, nome: "Maria Oliveira", cpf: "555.666.777-88", whatsapp: "(43) 98888-8888" }
-                ];
-
+                const res = await fetch('/api/admin/listar'); 
+                
                 if (res.ok) {
+                    const dados = await res.json();
                     contador.textContent = dados.length;
                     tbody.innerHTML = '';
 
                     if (dados.length === 0) {
-                        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--texto-cinza);">Nenhuma inscrição encontrada.</td></tr>';
+                        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--texto-mutado);">Nenhuma inscrição encontrada.</td></tr>';
                         return;
                     }
 
                     dados.forEach(inscrito => {
                         const tr = document.createElement('tr');
                         tr.innerHTML = `
-                            <td class="ticket-id">#${String(inscrito.id).padStart(3, '0')}</td>
+                            <td style="font-weight: bold; color: var(--azul-senai);">#${String(inscrito.id).padStart(3, '0')}</td>
                             <td style="font-weight: 600;">${inscrito.nome}</td>
                             <td>${inscrito.cpf}</td>
                             <td>${inscrito.whatsapp}</td>
                             <td><span class="status-badge">Confirmado</span></td>
                             <td>
-                                <button class="btn-deletar" onclick="deletarInscricao(${inscrito.id}, '${inscrito.nome}')">Excluir</button>
+                                <button class="btn-deletar" onclick="deletarInscricao(${inscrito.id}, '${inscrito.nome}')">✕ Excluir</button>
                             </td>
                         `;
                         tbody.appendChild(tr);
                     });
                 }
             } catch (err) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--vermelho-erro);">Erro ao conectar com o servidor.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--vermelho-senai);">Erro ao conectar com o servidor.</td></tr>';
             }
         }
 
         async function deletarInscricao(id, nome) {
             if (!confirm(`Tem certeza que deseja excluir a inscrição de ${nome}?`)) return;
-            
-            // Simulação da exclusão visual
-            alert("Ação de exclusão disparada. (Conecte à API)");
-            
-            /* CÓDIGO ORIGINAL DO SEU BACKEND
+
             try {
                 const res = await fetch(`/api/admin/deletar/${id}`, { method: 'DELETE' });
-                if (res.ok) { carregarDados(); } else { alert('Erro ao excluir.'); }
-            } catch (err) { alert('Erro de conexão.'); }
-            */
+                if (res.ok) {
+                    carregarDados();
+                } else {
+                    alert('Erro ao excluir inscrição.');
+                }
+            } catch (err) {
+                alert('Erro de conexão com o servidor.');
+            }
         }
 
-        // Carrega ao abrir a página
         carregarDados();
     </script>
 </body>
